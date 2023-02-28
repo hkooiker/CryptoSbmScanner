@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:CryptoSbmScanner"
+             xmlns:binance="clr-namespace:Binance.Net.Objects.Models.Spot;assembly=Binance.Net"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="CryptoSbmScanner.MainPage"
+             x:DataType="local:MainViewModel">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior EventName="Loaded" Command="{Binding GetSymbolsCommand}" />
+    </ContentPage.Behaviors>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Entry IsEnabled="{Binding GetSymbolsCommand.IsRunning, Converter={StaticResource InvertedBoolConverter}}" Placeholder="Search symbol" Grid.Column="0" Grid.Row="0">
+            <Entry.Behaviors>
+                <toolkit:EventToCommandBehavior EventName="TextChanged" Command="{Binding SearchSymbolCommand}" x:TypeArguments ="TextChangedEventArgs"/>
+            </Entry.Behaviors>
+        </Entry>
+        <CollectionView Grid.Column="0" Grid.Row="1" Margin="10" ItemsSource="{Binding Symbols}" SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="binance:BinanceSymbol">
+                    <VerticalStackLayout>
+                        <VerticalStackLayout.GestureRecognizers>
+                            <TapGestureRecognizer NumberOfTapsRequired="2" Command="{Binding Source={RelativeSource AncestorType={x:Type local:MainViewModel}}, Path=OpenSymbolCommand}" CommandParameter="{Binding .}" />
+                        </VerticalStackLayout.GestureRecognizers>
+                        <Label Text="{Binding Name}">
+                            <FlyoutBase.ContextFlyout>
+                                <MenuFlyout>
+                                    <MenuFlyoutItem Text="Copy" Clicked="Copy_Clicked" CommandParameter="{Binding Name}"/>
+                                </MenuFlyout>
+                            </FlyoutBase.ContextFlyout>
+                        </Label>
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <HorizontalStackLayout IsVisible="{Binding GetSymbolsCommand.IsRunning}" Grid.Column="0" Grid.Row="1" VerticalOptions="Start" Spacing="10" Padding="10" HorizontalOptions="StartAndExpand">
+            <ActivityIndicator IsRunning="{Binding GetSymbolsCommand.IsRunning}" HeightRequest="15" WidthRequest="15" />
+            <Label Text="Loading symbols" TextColor="White" HorizontalOptions="CenterAndExpand" />
+        </HorizontalStackLayout>
+
+    </Grid>
+
+</ContentPage>
