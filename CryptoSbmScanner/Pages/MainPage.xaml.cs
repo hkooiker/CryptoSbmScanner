@@ -1,4 +1,6 @@
-﻿namespace CryptoSbmScanner;
+﻿using CryptoSbmScanner.ViewModels;
+
+namespace CryptoSbmScanner.Pages;
 
 public partial class MainPage : ContentPage
 {
