@@ -1,15 +1,21 @@
-﻿namespace CryptoSbmScanner.Models;
+﻿using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
+
+namespace CryptoSbmScanner.Models;
 
 public sealed class Interval
 {
-    private Interval() { }
-    public IntervalPeriod Id { get; private set; }
-    public IntervalPeriod? ConstructFrom { get; private set; }
-    public static Interval Create(IntervalPeriod id, IntervalPeriod? constructFrom = null) => new()
+    private readonly ConcurrentDictionary<DateTime, Candle> _candles = new();
+
+    public Interval(IntervalPeriod id)
     {
-        Id = id,
-        ConstructFrom = constructFrom
-    };
+        Id = id;
+    }
+
+    public IntervalPeriod Id { get; private set; }
+    public ReadOnlyDictionary<DateTime, Candle> Candles => _candles.AsReadOnly();
+    public void AddCandle(Candle candle) 
+        => _candles.TryAdd(candle.Date, candle);
 }
 
 public enum IntervalPeriod

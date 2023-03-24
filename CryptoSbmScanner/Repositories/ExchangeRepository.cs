@@ -5,16 +5,19 @@ namespace CryptoSbmScanner.Repositories;
 
 public sealed class ExchangeRepository
 {
-    private readonly ConcurrentDictionary<ExchangeId, Exchange> _items = new();
+    private readonly ConcurrentDictionary<string, Exchange> _items = new();
 
     public ExchangeRepository()
-    {        
-        Add(Exchange.Create("Binance"));
+    {
+        Add(new Exchange("Binance"));
     }
 
-    public void Add(Exchange exchange) => _items.TryAdd(exchange.Id, exchange);
+    private void Add(Exchange exchange)
+        => _items.TryAdd(exchange.Name!, exchange);
 
-    public Exchange Get(ExchangeId id) => _items.TryGetValue(id, out Exchange exchange) ? exchange : default;
-
-    public Exchange Find(Func<Exchange, bool> predicate) => _items.Values.FirstOrDefault(predicate);
+    public Exchange? TryGet(string name)
+    {
+        _items.TryGetValue(name, out Exchange? exchange);
+        return exchange;
+    }
 }

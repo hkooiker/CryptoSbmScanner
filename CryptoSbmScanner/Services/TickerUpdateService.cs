@@ -2,17 +2,15 @@
 using Binance.Net.Interfaces.Clients;
 using CryptoExchange.Net.Objects;
 using CryptoExchange.Net.Sockets;
-using CryptoSbmScanner.Notifications;
-using MediatR;
 
 namespace CryptoSbmScanner.Services;
 
-public sealed class TickerUpdateService : INotificationHandler<SymbolsLoaded>
+public sealed class TickerUpdateService
 {
     private readonly IBinanceSocketClient _socketClient;
     private readonly SymbolService _symbolService;
 
-    private UpdateSubscription _subscription;
+    private UpdateSubscription? _subscription;
 
     public TickerUpdateService(IBinanceSocketClient socketClient, SymbolService symbolService)
     {
@@ -20,7 +18,7 @@ public sealed class TickerUpdateService : INotificationHandler<SymbolsLoaded>
         _symbolService = symbolService;
     }
 
-    public async Task Handle(SymbolsLoaded notification, CancellationToken cancellationToken)
+    public async Task SubscribeAsync(CancellationToken cancellationToken = default)
     {
         CallResult<UpdateSubscription> subscription = await _socketClient.SpotStreams.SubscribeToAllTickerUpdatesAsync((data) =>
         {

@@ -1,9 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CryptoSbmScanner.Models;
-using CryptoSbmScanner.Notifications;
 using CryptoSbmScanner.Services;
-using MediatR;
 using System.Collections.ObjectModel;
 
 namespace CryptoSbmScanner.ViewModels;
@@ -11,14 +9,16 @@ namespace CryptoSbmScanner.ViewModels;
 public partial class MainViewModel : ObservableObject
 {    
     private readonly SymbolService _symbolService;
-    private readonly IPublisher _publisher;
+    private readonly TickerUpdateService _tickerUpdateService;
+    private readonly KlineUpdateService _klineUpdateService;
 
     public ObservableCollection<Symbol> Symbols { get; } = new();
 
-    public MainViewModel(SymbolService symbolService, IPublisher mediator)
+    public MainViewModel(SymbolService symbolService, TickerUpdateService tickerUpdateService, KlineUpdateService klineUpdateService)
     {
         _symbolService = symbolService;
-        _publisher = mediator;
+        _tickerUpdateService = tickerUpdateService;
+        _klineUpdateService = klineUpdateService;
     }
 
     [RelayCommand]
@@ -39,11 +39,13 @@ public partial class MainViewModel : ObservableObject
             return;
 
         await _symbolService.InitAsync();
-        await _publisher.Publish(new SymbolsLoaded(_symbolService.GetSymbols().Select(s => s.Name).ToArray()));
+        string[] symbolNames = _symbolService.GetSymbols().Select(s => s.Name).ToArray();
+        await _tickerUpdateService.SubscribeAsync();
+        await _klineUpdateService.SubscribeAsync(symbolNames);
         ShowSymbols();
     }
 
-    void ShowSymbols(Func<Symbol,bool> predicate = null)
+    void ShowSymbols(Func<Symbol,bool>? predicate = null)
     {
         Symbols.Clear();
         foreach (Symbol symbol in _symbolService.GetSymbols(predicate))

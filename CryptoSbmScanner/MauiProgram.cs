@@ -1,6 +1,5 @@
 ﻿using Binance.Net;
 using CommunityToolkit.Maui;
-using CryptoExchange.Net.Objects;
 using CryptoSbmScanner.Pages;
 using CryptoSbmScanner.Repositories;
 using CryptoSbmScanner.Services;
@@ -26,15 +25,8 @@ public static class MauiProgram
             .AddBinance((client, socket) =>
             {
                 socket.SpotStreamsOptions.SocketResponseTimeout = TimeSpan.FromMinutes(1);
-            }, ServiceLifetime.Singleton)
-            .AddMediatR(cfg =>
-            {
-                cfg.RegisterServicesFromAssembly(typeof(MauiProgram).Assembly);
-            })
+            }, ServiceLifetime.Singleton)            
             .AddSingleton<ExchangeRepository>()
-            .AddSingleton<SymbolRepository>()
-            .AddSingleton<CandleRepository>()
-            .AddSingleton<IntervalRepository>()
             .AddSingleton<BinanceService>()
             .AddSingleton<SymbolService>()
             .AddSingleton<KlineUpdateService>()
