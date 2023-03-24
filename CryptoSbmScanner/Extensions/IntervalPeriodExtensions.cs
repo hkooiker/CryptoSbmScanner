@@ -17,7 +17,7 @@ public static class IntervalPeriodExtensions
         { IntervalPeriod.TwoHours, IntervalPeriod.OneHour },
         { IntervalPeriod.ThreeHours, IntervalPeriod.OneHour },
         { IntervalPeriod.FourHours, IntervalPeriod.TwoHours },
-        { IntervalPeriod.SixHours, IntervalPeriod.ThreeHours },
+        { IntervalPeriod.SixHours, IntervalPeriod.TwoHours },
         { IntervalPeriod.EightHours, IntervalPeriod.FourHours },
         { IntervalPeriod.TwelveHours, IntervalPeriod.SixHours },
         { IntervalPeriod.OneDay, IntervalPeriod.TwelveHours }

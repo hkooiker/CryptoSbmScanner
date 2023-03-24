@@ -37,7 +37,7 @@ public sealed class SymbolService
             .Distinct();
         if(activeQuotes is not null)
         {
-            _activeQuotes = activeQuotes.ToList();
+            _activeQuotes = activeQuotes;
         }
     }
 

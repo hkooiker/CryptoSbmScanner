@@ -1,9 +1,13 @@
 ﻿using Skender.Stock.Indicators;
+using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 
 namespace CryptoSbmScanner.Models;
 
 public sealed class Candle : IQuote
 {
+    private readonly ConcurrentDictionary<Indicator, IReusableResult> _indicators = new();
+
     public Candle(decimal open, decimal high, decimal low, decimal close, decimal volume, DateTime date)
     {
         Open = open;
@@ -25,4 +29,7 @@ public sealed class Candle : IQuote
     public decimal Volume { get; private set; }
 
     public DateTime Date { get; private set; }
+    public ReadOnlyDictionary<Indicator, IReusableResult> Indicators => _indicators.AsReadOnly();
+    public bool AddIndicatorResult(Indicator indicator, IReusableResult result)
+        => _indicators.TryAdd(indicator, result);    
 }
